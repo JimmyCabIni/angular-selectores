@@ -6,6 +6,12 @@ export enum Region {
   Oceania   = 'Oceania'
 }
 
+export interface SmallCountry {
+  name: string;
+  cca3: string;
+  borders: string[];
+}
+
 export interface TopLevel {
   name:         Name;
   cca3:         string;
