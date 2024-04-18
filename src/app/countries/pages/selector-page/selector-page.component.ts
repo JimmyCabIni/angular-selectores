@@ -12,7 +12,7 @@ import { filter, switchMap, tap } from 'rxjs';
 export class SelectorPageComponent implements OnInit{
 
   public countriesByRegion: SmallCountry[] = [];
-  public borders: string[] = [];
+  public borders: SmallCountry[] = [];
 
   public myForm: FormGroup = this.fb.group({
     region: ['', Validators.required],
@@ -40,6 +40,7 @@ export class SelectorPageComponent implements OnInit{
     this.myForm.get('region')!.valueChanges
     .pipe(
       tap( () => this.myForm.get('country')!.setValue('') ),
+      tap( () => this.borders = [] ),
       switchMap( (region) => this.countriesService.getCountriesByRegion(region) )
     )
     .subscribe( countries => {
@@ -50,13 +51,16 @@ export class SelectorPageComponent implements OnInit{
   onCountryChanged():void{
     this.myForm.get('country')!.valueChanges
     .pipe(
+      // Obtengo los alphacode de border
       tap( () => this.myForm.get('border')!.setValue('') ),
       filter( (value: string) => value.length > 0),
-      switchMap( (alphaCode) => this.countriesService.getCountryByAlphaCode(alphaCode) )
+      // Convierto de código alpha a SmallCountry
+      switchMap( (alphaCode) => this.countriesService.getCountryByAlphaCode(alphaCode) ),
+      // Covierto el array de borders (alphacode) del SmallCountry anterior a SmallCountry
+      switchMap( (country) => this.countriesService.getCountryBordersByCode( country.borders) ),
     )
-    .subscribe( country => {
-      console.log({ borders: country.borders })
-      this.borders = country.borders;
+    .subscribe( countries => {
+      this.borders = countries;
     });
   }
 }
