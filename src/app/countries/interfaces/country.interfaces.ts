@@ -12,7 +12,7 @@ export interface SmallCountry {
   borders: string[];
 }
 
-export interface TopLevel {
+export interface Country {
   name:         Name;
   cca3:         string;
   status:       Status;
